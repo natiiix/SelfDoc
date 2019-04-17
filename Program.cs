@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -17,13 +17,18 @@ namespace SelfDoc
             {
                 Match match = null;
 
-                if ((match = Regex.Match(command, @"^let (\w+) be (.+)$")).Success)
+                if ((match = Regex.Match(command, @"^let\s+(\w+)\s+be\s+(.+)$")).Success)
                 {
                     variables[match.Groups[1].Value] = Evaluate(match.Groups[2].Value);
                 }
-                else if ((match = Regex.Match(command, @"^print (.+)$")).Success)
+                else if ((match = Regex.Match(command, @"^print\s+(.+)$")).Success)
                 {
-                    Console.WriteLine($"{match.Groups[1].Value} = {Evaluate(match.Groups[1].Value)}");
+                    string[] printArgs = SplitArgs(match.Groups[1].Value);
+
+                    foreach (string a in printArgs)
+                    {
+                        Console.WriteLine($"{a} = {Evaluate(a)}");
+                    }
                 }
             }
         }
@@ -44,27 +49,27 @@ namespace SelfDoc
             {
                 return value;
             }
-            else if ((match = Regex.Match(str, @"^(.+?) plus (.+)$")).Success)
+            else if ((match = Regex.Match(str, @"^(.+?)\s+plus\s+(.+)$")).Success)
             {
                 return Evaluate(match.Groups[1].Value) + Evaluate(match.Groups[2].Value);
             }
-            else if ((match = Regex.Match(str, @"^(.+?) minus (.+)$")).Success)
+            else if ((match = Regex.Match(str, @"^(.+?)\s+minus\s+(.+)$")).Success)
             {
                 return Evaluate(match.Groups[1].Value) - Evaluate(match.Groups[2].Value);
             }
-            else if ((match = Regex.Match(str, @"^(.+?) times (.+)$")).Success)
+            else if ((match = Regex.Match(str, @"^(.+?)\s+times\s+(.+)$")).Success)
             {
                 return Evaluate(match.Groups[1].Value) * Evaluate(match.Groups[2].Value);
             }
-            else if ((match = Regex.Match(str, @"^(.+?) over (.+)$")).Success)
+            else if ((match = Regex.Match(str, @"^(.+?)\s+over\s+(.+)$")).Success)
             {
                 return Evaluate(match.Groups[1].Value) / Evaluate(match.Groups[2].Value);
             }
-            else if ((match = Regex.Match(str, @"^sum of (.+)$")).Success)
+            else if ((match = Regex.Match(str, @"^sum\s+of\s+(.+)$")).Success)
             {
                 return SplitArgs(match.Groups[1].Value).Select(x => Evaluate(x)).Sum();
             }
-            else if ((match = Regex.Match(str, @"^product of (.+)$")).Success)
+            else if ((match = Regex.Match(str, @"^product\s+of\s+(.+)$")).Success)
             {
                 return SplitArgs(match.Groups[1].Value).Select(x => Evaluate(x)).Product();
             }
@@ -79,6 +84,6 @@ namespace SelfDoc
         }
 
         private static string[] SplitArgs(string str) =>
-            Regex.Split(str, @"\s*\band\b\s*|\s*,\s*");
+            Regex.Split(str, @"\s*\band\b\s*|\s*;\s*");
     }
 }
