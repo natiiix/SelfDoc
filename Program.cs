@@ -23,12 +23,7 @@ namespace SelfDoc
                 }
                 else if ((match = Regex.Match(command, @"^print\s+(.+)$")).Success)
                 {
-                    string[] printArgs = SplitArgs(match.Groups[1].Value);
-
-                    foreach (string a in printArgs)
-                    {
-                        Console.WriteLine($"{a} = {Evaluate(a)}");
-                    }
+                    Console.WriteLine(string.Join("; ", SplitArgs(match.Groups[1].Value).Select(x => $"{x} = {Evaluate(x)}")));
                 }
             }
         }
@@ -49,6 +44,14 @@ namespace SelfDoc
             {
                 return value;
             }
+            else if ((match = Regex.Match(str, @"^sum\s+of\s+(.+)$")).Success)
+            {
+                return SplitArgs(match.Groups[1].Value).Select(x => Evaluate(x)).Sum();
+            }
+            else if ((match = Regex.Match(str, @"^product\s+of\s+(.+)$")).Success)
+            {
+                return SplitArgs(match.Groups[1].Value).Select(x => Evaluate(x)).Product();
+            }
             else if ((match = Regex.Match(str, @"^(.+?)\s+plus\s+(.+)$")).Success)
             {
                 return Evaluate(match.Groups[1].Value) + Evaluate(match.Groups[2].Value);
@@ -64,14 +67,6 @@ namespace SelfDoc
             else if ((match = Regex.Match(str, @"^(.+?)\s+over\s+(.+)$")).Success)
             {
                 return Evaluate(match.Groups[1].Value) / Evaluate(match.Groups[2].Value);
-            }
-            else if ((match = Regex.Match(str, @"^sum\s+of\s+(.+)$")).Success)
-            {
-                return SplitArgs(match.Groups[1].Value).Select(x => Evaluate(x)).Sum();
-            }
-            else if ((match = Regex.Match(str, @"^product\s+of\s+(.+)$")).Success)
-            {
-                return SplitArgs(match.Groups[1].Value).Select(x => Evaluate(x)).Product();
             }
 
             throw new ArgumentException("Unable to evaluate: " + str);
