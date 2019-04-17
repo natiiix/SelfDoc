@@ -32,7 +32,11 @@ namespace SelfDoc
         {
             Match match = null;
 
-            if (variables.ContainsKey(str))
+            if (str.StartsWith('-'))
+            {
+                return -Evaluate(str.Substring(1));
+            }
+            else if (variables.ContainsKey(str))
             {
                 return variables[str];
             }
