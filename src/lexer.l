@@ -20,7 +20,15 @@ void count(void);
 "let"                   { count(); return KW_LET; }
 "be"                    { count(); return KW_BE; }
 "print"                 { count(); return KW_PRINT; }
-[0-9]+		            { count(); yylval.int_val = atoi(yytext); return LIT_INT; }
+"sum"                   { count(); return KW_SUM; }
+"product"               { count(); return KW_PRODUCT; }
+"of"                    { count(); return KW_OF; }
+"and"                   { count(); return KW_AND; }
+"plus"                  { count(); return KW_PLUS; }
+"minus"                 { count(); return KW_MINUS; }
+"times"                 { count(); return KW_TIMES; }
+"over"                  { count(); return KW_OVER; }
+[0-9]+(\.[0-9]+)?		{ count(); yylval.str_val = strdup(yytext); return LIT_NUM; }
 [a-zA-Z_][a-zA-Z0-9_]*  { count(); yylval.str_val = strdup(yytext); return IDENTIFIER; }
 \n                      { count(); return NEWLINE; }
 [ \t\r]                 { count(); }

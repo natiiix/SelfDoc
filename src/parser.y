@@ -26,17 +26,16 @@ bool include_stdio = false;
 
 %union
 {
-	int int_val;
+	// double num_val;
     const char* str_val;
 }
 
-%token<int_val> LIT_INT
-%token<str_val> IDENTIFIER
+%token<str_val> LIT_NUM IDENTIFIER
 
 %token NEWLINE
-%token KW_LET KW_BE KW_PRINT
+%token KW_LET KW_BE KW_PRINT KW_SUM KW_PRODUCT KW_OF KW_AND KW_PLUS KW_MINUS KW_TIMES KW_OVER
 
-%type<str_val> statement_block statement
+%type<str_val> statement_block statement expression expression_plus_minus expression_times_over expression_atomic
 
 %start translation_unit
 
@@ -54,8 +53,29 @@ statement_block
     ;
 
 statement
-    : KW_LET IDENTIFIER KW_BE LIT_INT NEWLINE { $$ = strformat("int %s = %d;", $2, $4); }
-    | KW_PRINT IDENTIFIER NEWLINE { include_stdio = true; $$ = strformat("printf(\"%%d\\n\", %s);", $2); }
+    : KW_LET IDENTIFIER KW_BE expression NEWLINE { $$ = strformat("double %s=%s;", $2, $4); }
+    | KW_PRINT expression NEWLINE { include_stdio = true; $$ = strformat("printf(\"%%g\\n\",%s);", $2); }
+    ;
+
+expression
+    : expression_plus_minus { $$ = $1; }
+    ;
+
+expression_plus_minus
+    : expression_times_over KW_PLUS expression_plus_minus { $$ = strformat("(%s+%s)", $1, $3); }
+    | expression_times_over KW_MINUS expression_plus_minus { $$ = strformat("%s-%s", $1, $3); }
+    | expression_times_over { $$ = $1; }
+    ;
+
+expression_times_over
+    : expression_atomic KW_TIMES expression_times_over { $$ = strformat("(%s*%s)", $1, $3); }
+    | expression_atomic KW_OVER expression_times_over { $$ = strformat("%s/%s", $1, $3); }
+    | expression_atomic { $$ = $1; }
+    ;
+
+expression_atomic
+    : LIT_NUM { $$ = $1; }
+    | IDENTIFIER { $$ = $1; }
     ;
 
 %%
