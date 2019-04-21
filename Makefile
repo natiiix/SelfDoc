@@ -1,3 +1,4 @@
+CFLAGS=-Wall -Wextra -g
 PROJECT_NAME=selfdoc
 SRC_DIR=src/
 BIN_DIR=bin/
@@ -10,7 +11,7 @@ PARSER=parser
 all: ${BIN_DIR}${PROJECT_NAME}
 
 ${BIN_DIR}${PROJECT_NAME}: makedirs ${TMP_DIR}${PROJECT_NAME}.tab.c ${TMP_DIR}${PROJECT_NAME}.tab.h ${TMP_DIR}lex.yy.c
-	gcc -Wall -Wextra -g -o ${BIN_DIR}${PROJECT_NAME} ${TMP_DIR}${PROJECT_NAME}.tab.c ${TMP_DIR}lex.yy.c
+	${CC} ${CFLAGS} -o ${BIN_DIR}${PROJECT_NAME} ${TMP_DIR}${PROJECT_NAME}.tab.c ${TMP_DIR}lex.yy.c
 
 ${TMP_DIR}${PROJECT_NAME}.tab.c: ${SRC_DIR}${PARSER}.y
 	yacc -Wall -v -o ${TMP_DIR}${PROJECT_NAME}.tab.c ${SRC_DIR}${PARSER}.y
@@ -32,6 +33,6 @@ clean:
 test: ${BIN_DIR}${PROJECT_NAME} $(wildcard ${TEST_DIR}*)
 	for f in $(wildcard ${TEST_DIR}*); do \
 		${BIN_DIR}${PROJECT_NAME} < $$f > ${TMP_DIR}test.c; \
-		gcc -o ${TMP_DIR}test.out ${TMP_DIR}test.c; \
+		${CC} ${CFLAGS} -o ${TMP_DIR}test.out ${TMP_DIR}test.c; \
 		${TMP_DIR}test.out; \
 	done
