@@ -1,0 +1,10 @@
+let x be 5 plus 8
+let y be x times 4
+let z be 1 times 2 times 3 times 4 times 5 plus -6.4 times 2
+print x
+print y
+print z
+print 12 over -5
+print 5 over 8 over 7 over 3
+print sum of 3.14 and 2 and product of 1 and 2 and 3 and 4
+print product of 3.14 and 2 and sum of 1 and 2 and 3 and 4
