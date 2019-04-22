@@ -62,14 +62,14 @@ expression
     ;
 
 expression_plus_minus
-    : expression_times_over KW_PLUS expression_plus_minus { $$ = strformat("(%s+%s)", $1, $3); }
-    | expression_times_over KW_MINUS expression_plus_minus { $$ = strformat("(%s-%s)", $1, $3); }
+    : expression_plus_minus KW_PLUS expression_times_over { $$ = strformat("(%s+%s)", $1, $3); }
+    | expression_plus_minus KW_MINUS expression_times_over { $$ = strformat("(%s-%s)", $1, $3); }
     | expression_times_over { $$ = $1; }
     ;
 
 expression_times_over
-    : expression_atomic KW_TIMES expression_times_over { $$ = strformat("(%s*%s)", $1, $3); }
-    | expression_atomic KW_OVER expression_times_over { $$ = strformat("(%s/%s)", $1, $3); }
+    : expression_times_over KW_TIMES expression_atomic { $$ = strformat("(%s*%s)", $1, $3); }
+    | expression_times_over KW_OVER expression_atomic { $$ = strformat("(%s/%s)", $1, $3); }
     | expression_atomic { $$ = $1; }
     ;
 
