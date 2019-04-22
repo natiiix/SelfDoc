@@ -35,7 +35,7 @@ bool include_stdio = false;
 %token NEWLINE
 %token KW_LET KW_BE KW_PRINT KW_SUM KW_PRODUCT KW_OF KW_AND KW_PLUS KW_MINUS KW_TIMES KW_OVER
 
-%type<str_val> statement_block statement top_level sum_list product_list plus_minus times_over single atomic
+%type<str_val> statement_block statement top_level plus_minus times_over atomic_sum_product sum_list product_list atomic
 
 %start translation_unit
 
@@ -61,6 +61,24 @@ top_level
     : plus_minus { $$ = $1; }
     ;
 
+plus_minus
+    : plus_minus KW_PLUS times_over { $$ = strformat("(%s+%s)", $1, $3); }
+    | plus_minus KW_MINUS times_over { $$ = strformat("(%s-%s)", $1, $3); }
+    | times_over { $$ = $1; }
+    ;
+
+times_over
+    : times_over KW_TIMES atomic_sum_product { $$ = strformat("(%s*%s)", $1, $3); }
+    | times_over KW_OVER atomic_sum_product { $$ = strformat("(%s/%s)", $1, $3); }
+    | atomic_sum_product { $$ = $1; }
+    ;
+
+atomic_sum_product
+    : atomic { $$ = $1; }
+    | KW_SUM KW_OF sum_list { $$ = $3; }
+    | KW_PRODUCT KW_OF product_list { $$ = $3; }
+    ;
+
 sum_list
     : sum_list KW_AND top_level { $$ = strformat("(%s+%s)", $1, $3); }
     | top_level { $$ = $1; }
@@ -69,24 +87,6 @@ sum_list
 product_list
     : product_list KW_AND top_level { $$ = strformat("(%s*%s)", $1, $3); }
     | top_level { $$ = $1; }
-    ;
-
-plus_minus
-    : plus_minus KW_PLUS times_over { $$ = strformat("(%s+%s)", $1, $3); }
-    | plus_minus KW_MINUS times_over { $$ = strformat("(%s-%s)", $1, $3); }
-    | times_over { $$ = $1; }
-    ;
-
-times_over
-    : times_over KW_TIMES single { $$ = strformat("(%s*%s)", $1, $3); }
-    | times_over KW_OVER single { $$ = strformat("(%s/%s)", $1, $3); }
-    | single { $$ = $1; }
-    ;
-
-single
-    : atomic { $$ = $1; }
-    | KW_SUM KW_OF sum_list { $$ = $3; }
-    | KW_PRODUCT KW_OF product_list { $$ = $3; }
     ;
 
 atomic
