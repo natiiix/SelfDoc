@@ -30,7 +30,7 @@ bool include_stdio = false;
     const char* str_val;
 }
 
-%token<str_val> LIT_NUM IDENTIFIER
+%token<str_val> LIT_FLOAT LIT_INT IDENTIFIER
 
 %token NEWLINE
 %token KW_LET KW_BE KW_PRINT KW_SUM KW_PRODUCT KW_OF KW_AND KW_PLUS KW_MINUS KW_TIMES KW_OVER
@@ -74,7 +74,8 @@ expression_times_over
     ;
 
 expression_atomic
-    : LIT_NUM { $$ = $1; }
+    : LIT_FLOAT { $$ = $1; }
+    | LIT_INT { $$ = strformat("%s.0", $1); }
     | IDENTIFIER { $$ = $1; }
     ;
 
