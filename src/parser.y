@@ -35,7 +35,7 @@ bool include_stdio = false;
 %token NEWLINE
 %token KW_LET KW_BE KW_PRINT KW_SUM KW_PRODUCT KW_OF KW_AND KW_PLUS KW_MINUS KW_TIMES KW_OVER
 
-%type<str_val> statement_block statement expression expression_sum sum_list expression_product product_list expression_plus_minus expression_times_over expression_atomic
+%type<str_val> statement_block statement expression sum_list product_list expression_plus_minus expression_times_over expression_atomic
 
 %start translation_unit
 
@@ -58,22 +58,14 @@ statement
     ;
 
 expression
-    : expression_sum { $$ = $1; }
-    | expression_product { $$ = $1; }
-    | expression_plus_minus { $$ = $1; }
-    ;
-
-expression_sum
     : KW_SUM KW_OF sum_list { $$ = $3; }
+    | KW_PRODUCT KW_OF product_list { $$ = $3; }
+    | expression_plus_minus { $$ = $1; }
     ;
 
 sum_list
     : sum_list KW_AND expression { $$ = strformat("(%s+%s)", $1, $3); }
     | expression { $$ = $1; }
-    ;
-
-expression_product
-    : KW_PRODUCT KW_OF product_list { $$ = $3; }
     ;
 
 product_list
