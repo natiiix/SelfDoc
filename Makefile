@@ -32,6 +32,7 @@ clean:
 .PHONY: test
 test: ${BIN_DIR}${PROJECT_NAME} $(wildcard ${TEST_DIR}*)
 	for f in $(wildcard ${TEST_DIR}*); do \
+		echo "--- RUNNING TEST: \"$$f\" ---"; \
 		${BIN_DIR}${PROJECT_NAME} < $$f > ${TMP_DIR}test.c; \
 		${CC} ${CFLAGS} -o ${TMP_DIR}test.out ${TMP_DIR}test.c; \
 		${TMP_DIR}test.out; \
