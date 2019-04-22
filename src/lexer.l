@@ -28,8 +28,8 @@ void count(void);
 "minus"                 { count(); return KW_MINUS; }
 "times"                 { count(); return KW_TIMES; }
 "over"                  { count(); return KW_OVER; }
-[0-9]+\.[0-9]+		    { count(); yylval.str_val = strdup(yytext); return LIT_FLOAT; }
-[0-9]+		            { count(); yylval.str_val = strdup(yytext); return LIT_INT; }
+-?[0-9]+\.[0-9]+        { count(); yylval.str_val = strdup(yytext); return LIT_FLOAT; }
+-?[0-9]+                { count(); yylval.str_val = strdup(yytext); return LIT_INT; }
 [a-zA-Z_][a-zA-Z0-9_]*  { count(); yylval.str_val = strdup(yytext); return IDENTIFIER; }
 \n                      { count(); return NEWLINE; }
 [ \t\r]                 { count(); }
@@ -41,16 +41,16 @@ void count(void)
 {
     // printf("[%s]\n", yytext);
 
-	for (int i = 0; yytext[i] != '\0'; i++)
+    for (int i = 0; yytext[i] != '\0'; i++)
     {
         if (yytext[i] == '\n')
         {
-			column = 0;
+            column = 0;
             row++;
         }
-		else
+        else
         {
-			column++;
+            column++;
         }
     }
 }
