@@ -35,7 +35,7 @@ bool include_stdio = false;
 %token NEWLINE
 %token KW_LET KW_BE KW_PRINT KW_SUM KW_PRODUCT KW_OF KW_AND KW_PLUS KW_MINUS KW_TIMES KW_OVER
 
-%type<str_val> statement_block statement expression sum_list product_list expression_plus_minus expression_times_over expression_single expression_atomic
+%type<str_val> statement_block statement top_level sum_list product_list plus_minus times_over single atomic
 
 %start translation_unit
 
@@ -53,43 +53,43 @@ statement_block
     ;
 
 statement
-    : KW_LET IDENTIFIER KW_BE expression NEWLINE { $$ = strformat("double %s=%s;", $2, $4); }
-    | KW_PRINT expression NEWLINE { include_stdio = true; $$ = strformat("printf(\"%%g\\n\",%s);", $2); }
+    : KW_LET IDENTIFIER KW_BE top_level NEWLINE { $$ = strformat("double %s=%s;", $2, $4); }
+    | KW_PRINT top_level NEWLINE { include_stdio = true; $$ = strformat("printf(\"%%g\\n\",%s);", $2); }
     ;
 
-expression
-    : expression_plus_minus { $$ = $1; }
+top_level
+    : plus_minus { $$ = $1; }
     ;
 
 sum_list
-    : sum_list KW_AND expression { $$ = strformat("(%s+%s)", $1, $3); }
-    | expression { $$ = $1; }
+    : sum_list KW_AND top_level { $$ = strformat("(%s+%s)", $1, $3); }
+    | top_level { $$ = $1; }
     ;
 
 product_list
-    : product_list KW_AND expression { $$ = strformat("(%s*%s)", $1, $3); }
-    | expression { $$ = $1; }
+    : product_list KW_AND top_level { $$ = strformat("(%s*%s)", $1, $3); }
+    | top_level { $$ = $1; }
     ;
 
-expression_plus_minus
-    : expression_plus_minus KW_PLUS expression_times_over { $$ = strformat("(%s+%s)", $1, $3); }
-    | expression_plus_minus KW_MINUS expression_times_over { $$ = strformat("(%s-%s)", $1, $3); }
-    | expression_times_over { $$ = $1; }
+plus_minus
+    : plus_minus KW_PLUS times_over { $$ = strformat("(%s+%s)", $1, $3); }
+    | plus_minus KW_MINUS times_over { $$ = strformat("(%s-%s)", $1, $3); }
+    | times_over { $$ = $1; }
     ;
 
-expression_times_over
-    : expression_times_over KW_TIMES expression_single { $$ = strformat("(%s*%s)", $1, $3); }
-    | expression_times_over KW_OVER expression_single { $$ = strformat("(%s/%s)", $1, $3); }
-    | expression_single { $$ = $1; }
+times_over
+    : times_over KW_TIMES single { $$ = strformat("(%s*%s)", $1, $3); }
+    | times_over KW_OVER single { $$ = strformat("(%s/%s)", $1, $3); }
+    | single { $$ = $1; }
     ;
 
-expression_single
-    : expression_atomic { $$ = $1; }
+single
+    : atomic { $$ = $1; }
     | KW_SUM KW_OF sum_list { $$ = $3; }
     | KW_PRODUCT KW_OF product_list { $$ = $3; }
     ;
 
-expression_atomic
+atomic
     : LIT_FLOAT { $$ = $1; }
     | LIT_INT { $$ = strformat("%s.0", $1); }
     | IDENTIFIER { $$ = $1; }
